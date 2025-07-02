@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>雅思写作模拟软件</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            height: 97%;
+            width: 97%;
+        }
+        .left-panel {
+            width: 45%; /* 左侧 40% */
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .right-panel {
+            width: 55%; /* 右侧 60% */
+            padding: 20px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column; /* 垂直排列 */
+            height: 100%; /* 确保右侧面板占满高度 */
+        }
+        .image-container {
+            text-align: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        .text-area {
+            width: 100%;
+            flex-grow: 1; /* 占据剩余空间 */
+            resize: none;
+            border: 2px solid #ccc;
+            padding: 10px;
+            font-size: 16px;
+            font-family: "Arial", sans-serif;
+        }
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .controls button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .time-display {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #333;
+        }
+        .word-count {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧面板 -->
+        <div class="left-panel">
+            <h2>Part 1</h2>
+            <p>You should spend about 20 minutes on this task. Write at least 150 words.</p>
+            <div class="image-container">
+                <img id="uploaded-image" src="" alt="Uploaded Image">
+            </div>
+            <label for="image-upload">导入图片：</label>
+            <input type="file" id="image-upload" accept="image/*" onchange="handleImageUpload()">
+        </div>
+
+        <!-- 右侧面板 -->
+        <div class="right-panel">
+            <textarea id="writing-area" class="text-area" spellcheck="false" placeholder="在此处写作..."></textarea>
+            <div class="controls">
+                <button id="start-btn">Start</button>
+                <button id="finish-btn" disabled>Finish</button>
+            </div>
+            <div class="time-display" id="timer">时间：00:00</div>
+            <div class="word-count" id="word-count">字数：0</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
