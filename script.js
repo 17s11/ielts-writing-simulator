@@ -81,5 +81,58 @@ writingArea.addEventListener('input', () => {
     updateWordCount();
 });
 
+const instructionDiv = document.getElementById('task-instruction');
+
+// 初始状态：显示默认提示文字
+function setPlaceholder() {
+    instructionDiv.innerText = '输入题目内容';
+    instructionDiv.style.color = '#aaa';
+    instructionDiv.style.fontStyle = 'italic';
+}
+
+function setContent(text) {
+    instructionDiv.innerText = text;
+    instructionDiv.style.color = '#333';
+    instructionDiv.style.fontStyle = 'normal';
+}
+
+// 初始化显示
+window.addEventListener('DOMContentLoaded', () => {
+    if (!instructionDiv.innerText.trim()) {
+        setPlaceholder();
+    }
+});
+
+// 双击进入编辑模式
+instructionDiv.addEventListener('dblclick', () => {
+    if (instructionDiv.isContentEditable) return;
+
+    // 清除 placeholder 文字
+    if (instructionDiv.innerText === '输入题目内容') {
+        instructionDiv.innerText = '';
+        instructionDiv.style.color = '#333';
+        instructionDiv.style.fontStyle = 'normal';
+    }
+
+    instructionDiv.contentEditable = 'true';
+    instructionDiv.focus();
+});
+
+// 按下 Enter 键保存并退出编辑
+instructionDiv.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault(); // 阻止换行
+        instructionDiv.contentEditable = 'false';
+
+        const text = instructionDiv.innerText.trim();
+        if (!text) {
+            setPlaceholder();
+        } else {
+            setContent(text);
+        }
+    }
+});
+
 // 初始状态
 updateWordCount();
+

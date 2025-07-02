@@ -66,6 +66,23 @@
             font-size: 16px;
             color: #555;
         }
+        .editable-text {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid transparent;
+            min-height: 60px;
+            font-size: 16px;
+            color: #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .editable-text:focus {
+            outline: none;
+            border-color: #888;
+        }
     </style>
 </head>
 <body>
@@ -73,7 +90,7 @@
         <!-- 左侧面板 -->
         <div class="left-panel">
             <h2>Part 1</h2>
-            <p>You should spend about 20 minutes on this task. Write at least 150 words.</p>
+            <div id="task-instruction" class="editable-text" contenteditable="false"></div>
             <div class="image-container">
                 <img id="uploaded-image" src="" alt="Uploaded Image">
             </div>
