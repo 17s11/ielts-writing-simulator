@@ -1,0 +1,15 @@
+{
+  "name": "ielts-writer",
+  "version": "1.0.0",
+  "description": "雅思写作模拟软件",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^25.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

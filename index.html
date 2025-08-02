@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>雅思写作模拟软件</title>
     <style>
         body {
@@ -18,17 +18,17 @@
             width: 97%;
         }
         .left-panel {
-            width: 45%; /* 左侧 40% */
+            width: 45%;
             padding: 20px;
             background-color: #f9f9f9;
         }
         .right-panel {
-            width: 55%; /* 右侧 60% */
+            width: 55%;
             padding: 20px;
             background-color: #fff;
             display: flex;
-            flex-direction: column; /* 垂直排列 */
-            height: 100%; /* 确保右侧面板占满高度 */
+            flex-direction: column;
+            height: 100%;
         }
         .image-container {
             text-align: center;
@@ -39,7 +39,7 @@
         }
         .text-area {
             width: 100%;
-            flex-grow: 1; /* 占据剩余空间 */
+            flex-grow: 1;
             resize: none;
             border: 2px solid #ccc;
             padding: 10px;
@@ -72,7 +72,8 @@
             border: 1px solid transparent;
             min-height: 60px;
             font-size: 16px;
-            color: #333;
+            color: #aaa;
+            font-style: italic;
             white-space: pre-wrap;
             word-wrap: break-word;
             cursor: pointer;
@@ -82,6 +83,11 @@
         .editable-text:focus {
             outline: none;
             border-color: #888;
+        }
+
+        .editable-text.filled {
+            color: #333;
+            font-style: normal;
         }
     </style>
 </head>
@@ -95,7 +101,7 @@
                 <img id="uploaded-image" src="" alt="Uploaded Image">
             </div>
             <label for="image-upload">导入图片：</label>
-            <input type="file" id="image-upload" accept="image/*" onchange="handleImageUpload()">
+            <input type="file" id="image-upload" accept="image/*">
         </div>
 
         <!-- 右侧面板 -->
@@ -104,12 +110,158 @@
             <div class="controls">
                 <button id="start-btn">Start</button>
                 <button id="finish-btn" disabled>Finish</button>
+                <button id="clear-btn" style="background-color: #e74c3c; color: white;">清除历史记录</button>
             </div>
             <div class="time-display" id="timer">时间：00:00</div>
             <div class="word-count" id="word-count">字数：0</div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // 全局变量
+        let timerInterval;
+        let startTime = 0;
+        let elapsedTime = 0;
+
+        // 获取 DOM 元素
+        const writingArea = document.getElementById('writing-area');
+        const startBtn = document.getElementById('start-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const timerDisplay = document.getElementById('timer');
+        const wordCountDisplay = document.getElementById('word-count');
+        const imageUploadInput = document.getElementById('image-upload');
+        const uploadedImage = document.getElementById('uploaded-image');
+        const instructionDiv = document.getElementById('task-instruction');
+
+        // 更新字数显示
+        function updateWordCount() {
+            const text = writingArea.value.trim();
+            const wordCount = text.split(/\s+/).filter(word => word.length > 0).length;
+            wordCountDisplay.textContent = `字数：${wordCount}`;
+            localStorage.setItem('ielts_writing_content', writingArea.value);
+        }
+
+        // 更新计时器显示
+        function updateTimer() {
+            const currentTime = Date.now();
+            elapsedTime = currentTime - startTime;
+            const minutes = Math.floor(elapsedTime / 60000);
+            const seconds = Math.floor((elapsedTime % 60000) / 1000);
+            timerDisplay.textContent = `时间：${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // 开始计时
+        function startTimer() {
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(updateTimer, 1000);
+            startBtn.disabled = true;
+            finishBtn.disabled = false;
+        }
+
+        // 停止计时并复制内容到剪贴板
+        function stopTimer() {
+            clearInterval(timerInterval);
+            const text = writingArea.value;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text)
+                    .then(() => console.log('内容已复制到剪贴板'))
+                    .catch(err => console.error('复制失败:', err));
+            } else {
+                alert('浏览器不支持剪贴板 API');
+            }
+            writingArea.disabled = true;
+            startBtn.disabled = true;
+            finishBtn.disabled = true;
+        }
+
+        // 处理图片上传
+        function handleImageUpload() {
+            const file = imageUploadInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    uploadedImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                uploadedImage.src = '';
+            }
+        }
+
+        // 设置占位符文本
+        function setPlaceholder() {
+            instructionDiv.innerText = '输入题目内容';
+            instructionDiv.classList.remove('filled');
+        }
+
+        function setContent(text) {
+            instructionDiv.innerText = text;
+            instructionDiv.classList.add('filled');
+        }
+
+        // 初始化显示
+        window.addEventListener('DOMContentLoaded', () => {
+            // 恢复上次保存的作文内容
+            const savedContent = localStorage.getItem('ielts_writing_content');
+            if (savedContent !== null) {
+                writingArea.value = savedContent;
+                updateWordCount(); // 更新字数统计
+            }
+
+            if (!instructionDiv.innerText.trim()) {
+                setPlaceholder();
+            } else {
+                setContent(instructionDiv.innerText);
+            }
+        });
+
+        // 双击进入编辑模式
+        instructionDiv.addEventListener('dblclick', () => {
+            if (instructionDiv.isContentEditable) return;
+
+            if (instructionDiv.innerText === '输入题目内容') {
+                instructionDiv.innerText = '';
+            }
+
+            instructionDiv.contentEditable = 'true';
+            instructionDiv.focus();
+        });
+
+        // 按下 Enter 键保存并退出编辑
+        instructionDiv.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // 阻止换行
+                instructionDiv.contentEditable = 'false';
+
+                const text = instructionDiv.innerText.trim();
+                if (!text) {
+                    setPlaceholder();
+                } else {
+                    setContent(text);
+                }
+            }
+        });
+
+        // 清除保存数据按钮事件
+        clearBtn.addEventListener('click', () => {
+            const confirmClear = confirm("确定要清除所有历史写作内容吗？");
+            if (confirmClear) {
+                localStorage.removeItem('ielts_writing_content'); // 清除保存的内容
+                writingArea.value = ''; // 清空写作区
+                updateWordCount(); // 更新字数为 0
+                alert("历史记录已清除！");
+            }
+        });
+
+        // 事件监听器初始化
+        startBtn.addEventListener('click', startTimer);
+        finishBtn.addEventListener('click', stopTimer);
+        writingArea.addEventListener('input', updateWordCount);
+        imageUploadInput.addEventListener('change', handleImageUpload);
+
+        // 初始更新字数
+        updateWordCount();
+    </script>
 </body>
 </html>
